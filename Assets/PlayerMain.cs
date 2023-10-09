@@ -50,14 +50,7 @@ public class PlayerMain : MonoBehaviour
 
         if (player.isGrounded)
         {
-            if ((Input.GetButton("Slide") && (playerVel.magnitude > GroundSettings.MaxSpd/2)))
-            {
-                SlideMove();
-            }
-            else
-            {
-                GroundMove();
-            }
+            GroundMove();
         }
         else
         {
@@ -132,48 +125,6 @@ public class PlayerMain : MonoBehaviour
         }
 
         Accelerate(wishDir, wishSpd, GroundSettings.Acc);
-    }
-
-    private void SlideMove()
-    {
-        ApplyFriction(0.05f);
-
-        float accel;
-
-        //Set input to temporary variable and have it relative to 
-        var wishDir = playerVel;
-        wishDir = trans.TransformDirection(wishDir);
-
-        //Sets whether the player wants to move or not
-        float wishSpd = wishDir.magnitude;
-        wishSpd *= GroundSettings.MaxSpd;
-
-        //Determines whether acc or decc value should be used dependent on input
-        float wishSpd2 = wishSpd;
-        if (Vector3.Dot(playerVel, wishDir) < 0)
-        {
-            accel = AirSettings.Decc;
-        }
-        else
-        {
-            accel = AirSettings.Acc;
-        }
-
-        // If the player is ONLY strafing left or right
-        if (moveDir.z == 0 && moveDir.x != 0)
-        {
-            if (wishSpd > StrafeSettings.MaxSpd)
-            {
-                wishSpd = StrafeSettings.MaxSpd;
-            }
-
-            accel = StrafeSettings.Acc;
-        }
-
-        Accelerate(wishDir, wishSpd, accel);
-        AirControl(wishDir, wishSpd2);
-
-        playerVel.y = -gravity * Time.deltaTime;
     }
 
     private void Accelerate(Vector3 targetDir, float targetSpd, float accel)
