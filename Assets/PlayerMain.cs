@@ -33,7 +33,7 @@ public class PlayerMain : MonoBehaviour
     private CharacterController player;
     private Transform trans;
     private Vector3 moveDir = Vector3.zero;
-    private Vector3 playerVel = Vector3.zero;
+    public Vector3 playerVel = Vector3.zero;
 
 
     // Start is called before the first frame update
