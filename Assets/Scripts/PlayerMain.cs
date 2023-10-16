@@ -26,8 +26,8 @@ public class PlayerMain : MonoBehaviour
     [SerializeField] private float jumpSpd = 8f;
     [SerializeField] private float hopSpd = 4f;
 
-    [SerializeField] private MovementSettings GroundSettings = new MovementSettings(7,14,10);
-    [SerializeField] private MovementSettings AirSettings = new MovementSettings(7,2,2);
+    [SerializeField] private MovementSettings GroundSettings = new MovementSettings(10,14,10);
+    [SerializeField] private MovementSettings AirSettings = new MovementSettings(10,2,2);
     [SerializeField] private MovementSettings StrafeSettings = new MovementSettings(1,50,50);
 
     private CharacterController player;
@@ -35,6 +35,7 @@ public class PlayerMain : MonoBehaviour
     private Vector3 moveDir = Vector3.zero;
     public Vector3 playerVel = Vector3.zero;
 
+    public WeaponHandler weaponHandlerScript;
 
     // Start is called before the first frame update
     void Start()
@@ -48,9 +49,14 @@ public class PlayerMain : MonoBehaviour
     {
         moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
+        weaponHandlerScript.currSpd = 0;
         if (player.isGrounded)
         {
             GroundMove();
+            if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+            {
+                weaponHandlerScript.currSpd = playerVel.magnitude;
+            }
         }
         else
         {
