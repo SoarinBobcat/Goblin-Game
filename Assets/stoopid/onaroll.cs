@@ -33,7 +33,7 @@ public class onaroll : MonoBehaviour
             else
             {
                 stop = !stop;
-                yield trail.SetActive(false);
+                trail.SetActive(false);
             }
         }
     }

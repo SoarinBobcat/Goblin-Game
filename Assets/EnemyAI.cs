@@ -6,10 +6,11 @@ using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     private NavMeshAgent agent;
+    [SerializeField] private NavMeshAgent wanderNode;
 
     public List<Transform> locations = new List<Transform>();
 
-    public bool moving = true;
+    public bool moving = false;
     private Vector3 currLocale = Vector3.zero;
 
     // Start is called before the first frame update
@@ -40,6 +41,13 @@ public class EnemyAI : MonoBehaviour
             }
             moving = !moving;
         }*/
-        agent.Move(new Vector3(1 * Time.deltaTime, 0, 0));
+        if (!moving)
+        {
+            moving = !moving;
+            Vector3 temp = new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
+            wanderNode.Move(temp);
+        }
+
+        agent.SetDestination(wanderNode.transform.position);
     }
 }

@@ -34,8 +34,8 @@ public class WeaponHandler : MonoBehaviour
                 currTimeX += bob.spdX / 10 * Time.deltaTime * bobMultiplier;
                 currTimeY += bob.spdY / 10 * Time.deltaTime * bobMultiplier;
 
-                xPos = bob.bobX.Evaluate(currTimeX) * bob.intensityX;
-                yPos = bob.bobY.Evaluate(currTimeY) * bob.intensityY;
+                xPos = (bob.bobX.Evaluate(currTimeX) * bob.intensityX);
+                yPos = (bob.bobY.Evaluate(currTimeY) * bob.intensityY);
             }
         }
 
