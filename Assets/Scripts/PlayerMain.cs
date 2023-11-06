@@ -72,7 +72,7 @@ public class PlayerMain : MonoBehaviour
 
         if (Input.GetButton("Kick"))
         {
-
+            kickAnim = true;
         }
 
         player.Move(playerVel * Time.deltaTime);
