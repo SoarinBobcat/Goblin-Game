@@ -6,48 +6,96 @@ using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     private NavMeshAgent agent;
-    [SerializeField] private NavMeshAgent wanderNode;
+    public Transform player;
 
     public List<Transform> locations = new List<Transform>();
+    public Vector3 wander = Vector3.zero;
 
-    public bool moving = false;
-    private Vector3 currLocale = Vector3.zero;
+    public bool aggro = false;
+    private float time = 0;
+
+    enum States
+    {
+        Idle,
+        Wander,
+        Chase,
+        Stun
+    }
+
+    States state = States.Idle;
 
     // Start is called before the first frame update
     void Start()
     {
         agent = this.gameObject.GetComponent<NavMeshAgent>();
         agent.isStopped = false;
-        //currLocale = locations[Random.Range(0, ((locations.Count) - 1))].position;
-        //agent.SetDestination(currLocale);
+
+        time = Random.Range(3, 10);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        /*if (Vector3.Distance(transform.position, currLocale) < 1f)
+        switch (state)
         {
-            if (!moving)
-            {
-                var temp = locations[Random.Range(0, ((locations.Count) - 1))].position;
-                while (currLocale == temp)
+            case States.Idle:
+                time -= Time.deltaTime;
+                if (time <= 0)
                 {
-                    temp = locations[Random.Range(0, ((locations.Count) - 1))].position;
+                    state = States.Wander;
+                    wander = WanderDest(transform.position, Random.Range(5f, 10f));
+                    agent.SetDestination(wander);
                 }
-                currLocale = temp;
+                break;
+            case States.Wander:
+                if (agent.remainingDistance < 0.2f)
+                {
+                    time = Random.Range(3, 10);
+                    state = States.Idle;
+                }
+                break;
+            case States.Chase:
+                agent.SetDestination(player.position);
+                if (!aggro)
+                {
+                    time -= Time.deltaTime;
+                }
 
-                agent.SetDestination(currLocale);
-                moving = !moving;
-            }
-            moving = !moving;
-        }*/
-        if (!moving)
-        {
-            moving = !moving;
-            Vector3 temp = new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
-            wanderNode.Move(temp);
+                if (time <= 0)
+                {
+                    state = States.Idle;
+                }
+                break;
+            case States.Stun:
+                break;
         }
+    }
 
-        agent.SetDestination(wanderNode.transform.position);
+    Vector3 WanderDest(Vector3 center, float range)
+    {
+        Vector3 temp = center + Random.insideUnitSphere * range;
+        NavMeshHit hit;
+        while (!NavMesh.SamplePosition(temp, out hit, 5.0f, NavMesh.AllAreas))
+        {
+            return hit.position;
+        }
+        return hit.position;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            time = 4;
+            aggro = true;
+            state = States.Chase;
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player")
+        {
+            aggro = false;
+        }
     }
 }

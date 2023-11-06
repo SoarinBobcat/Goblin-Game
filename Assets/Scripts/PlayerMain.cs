@@ -37,6 +37,13 @@ public class PlayerMain : MonoBehaviour
 
     public WeaponHandler weaponHandlerScript;
 
+    enum AttackState
+    {
+        Idle,
+        Slash,
+        Kick
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -61,6 +68,11 @@ public class PlayerMain : MonoBehaviour
         else
         {
             AirMove();
+        }
+
+        if (Input.GetButton("Kick"))
+        {
+
         }
 
         player.Move(playerVel * Time.deltaTime);
