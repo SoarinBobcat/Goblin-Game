@@ -22,7 +22,7 @@ public class PlayerMain : MonoBehaviour
     //Movement Settings
     [Header("Movement")]
     [SerializeField] private float friction = 6f;
-    [SerializeField] private float gravity = 20f;
+    [SerializeField] private float gravity = 0.5f;
     [SerializeField] private float jumpSpd = 8f;
     [SerializeField] private float hopSpd = 4f;
 
@@ -36,6 +36,9 @@ public class PlayerMain : MonoBehaviour
     public Vector3 playerVel = Vector3.zero;
 
     public WeaponHandler weaponHandlerScript;
+    public GameObject foot;
+
+    private bool kickAnim = false;
 
     enum AttackState
     {
@@ -43,6 +46,8 @@ public class PlayerMain : MonoBehaviour
         Slash,
         Kick
     }
+
+    
 
     // Start is called before the first frame update
     void Start()

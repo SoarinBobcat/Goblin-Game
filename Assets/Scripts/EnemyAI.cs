@@ -6,13 +6,19 @@ using UnityEngine.AI;
 public class EnemyAI : MonoBehaviour
 {
     private NavMeshAgent agent;
+    private CharacterController C_C;
+
     public Transform player;
 
     public List<Transform> locations = new List<Transform>();
     public Vector3 wander = Vector3.zero;
 
+    private int HP = 999;
     public bool aggro = false;
     private float time = 0;
+
+    private float gravity = 0.5f;
+    public Vector3 enemyVel = Vector3.zero;
 
     enum States
     {
@@ -28,17 +34,19 @@ public class EnemyAI : MonoBehaviour
     void Start()
     {
         agent = this.gameObject.GetComponent<NavMeshAgent>();
-        agent.isStopped = false;
+        C_C = this.gameObject.GetComponent<CharacterController>();
+
+        agent.updatePosition = false;
+        agent.updateRotation = false;
 
         time = Random.Range(3, 10);
     }
 
-    void Update()
+    void FixedUpdate()
     {
         switch (state)
         {
             case States.Idle:
-                time -= Time.deltaTime;
                 if (time <= 0)
                 {
                     state = States.Wander;
@@ -49,16 +57,12 @@ public class EnemyAI : MonoBehaviour
             case States.Wander:
                 if (agent.remainingDistance < 0.2f)
                 {
-                    time = Random.Range(3, 10);
+                    time = Random.Range(1, 4);
                     state = States.Idle;
                 }
                 break;
             case States.Chase:
                 agent.SetDestination(player.position);
-                if (!aggro)
-                {
-                    time -= Time.deltaTime;
-                }
 
                 if (time <= 0)
                 {
@@ -68,6 +72,37 @@ public class EnemyAI : MonoBehaviour
             case States.Stun:
                 break;
         }
+
+        if (HP <= 0)
+        {
+            this.gameObject.SetActive(false);
+        }
+
+        if (C_C.isGrounded)
+        {
+
+            enemyVel = Vector3.zero;
+            C_C.Move(agent.velocity*2 * Time.deltaTime);
+        }
+        else
+        {
+            enemyVel.y -= gravity;
+            C_C.Move(enemyVel * Time.deltaTime);
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (!aggro)
+        {
+            time -= Time.deltaTime;
+        }
+
+        /*Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
+        if (worldDeltaPosition.magnitude > agent.radius)
+        {*/
+        agent.nextPosition = transform.position; //+ 0.1f * worldDeltaPosition;
+        //}
     }
 
     Vector3 WanderDest(Vector3 center, float range)
@@ -81,21 +116,27 @@ public class EnemyAI : MonoBehaviour
         return hit.position;
     }
 
-    void OnTriggerEnter(Collider other)
+    public void PlayerEntered()
     {
-        if (other.tag == "Player")
-        {
-            time = 4;
-            aggro = true;
-            state = States.Chase;
-        }
+        time = 4;
+        aggro = true;
+        state = States.Chase;
     }
 
-    void OnTriggerExit(Collider other)
+    public void PlayerExited()
     {
-        if (other.tag == "Player")
+        aggro = false;
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Hurtbox")
         {
-            aggro = false;
+            Debug.Log("Hit!");
+
+            HP -= other.GetComponentInParent<HurtboxInfo>().damage;
+            enemyVel = Vector3.Normalize(transform.position-other.GetComponentInParent<Transform>().position)* other.GetComponentInParent<HurtboxInfo>().knockback;
+            enemyVel.y = 4;
         }
     }
 }
