@@ -546,7 +546,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &397318616
 Transform:
   m_ObjectHideFlags: 0
@@ -1149,6 +1149,11 @@ Transform:
   m_Father: {fileID: 1230418377}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1005381785 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1602570454501873233, guid: 27ae03c7856724e489ed522c7237b962, type: 3}
+  m_PrefabInstance: {fileID: 2014264739}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1185182013
 GameObject:
   m_ObjectHideFlags: 0
@@ -1409,7 +1414,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1717278324
 Transform:
   m_ObjectHideFlags: 0
@@ -1438,7 +1443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 0
-  knockback: 20
+  knockback: 40
   canStun: 1
 --- !u!65 &1717278326
 BoxCollider:
@@ -1697,6 +1702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1906401589}
+  stunParticle: {fileID: 1005381785}
   locations: []
   wander: {x: 0, y: 0, z: 0}
   aggro: 0

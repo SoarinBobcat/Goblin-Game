@@ -9,6 +9,7 @@ public class EnemyAI : MonoBehaviour
     private CharacterController C_C;
 
     public Transform player;
+    public GameObject stunParticle;
 
     public List<Transform> locations = new List<Transform>();
     public Vector3 wander = Vector3.zero;
@@ -39,63 +40,15 @@ public class EnemyAI : MonoBehaviour
         agent.updatePosition = false;
         agent.updateRotation = false;
 
-        time = Random.Range(3, 10);
+        time = Random.Range(1f, 4f);
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        switch (state)
-        {
-            case States.Idle:
-                if (time <= 0)
-                {
-                    state = States.Wander;
-                    wander = WanderDest(transform.position, Random.Range(5f, 10f));
-                    agent.SetDestination(wander);
-                }
-                break;
-            case States.Wander:
-                if (agent.remainingDistance < 0.2f)
-                {
-                    time = Random.Range(1, 4);
-                    state = States.Idle;
-                }
-                break;
-            case States.Chase:
-                agent.SetDestination(player.position);
-
-                if (time <= 0)
-                {
-                    state = States.Idle;
-                }
-                break;
-            case States.Stun:
-                break;
-        }
-
-        if (HP <= 0)
-        {
-            this.gameObject.SetActive(false);
-        }
-
-        if (C_C.isGrounded)
-        {
-
-            enemyVel = Vector3.zero;
-            C_C.Move(agent.velocity*2 * Time.deltaTime);
-        }
-        else
-        {
-            enemyVel.y -= gravity;
-            C_C.Move(enemyVel * Time.deltaTime);
-        }
-    }
-
-    void LateUpdate()
-    {
-        if (!aggro)
+        if ((!aggro) || (state == States.Stun))
         {
             time -= Time.deltaTime;
+            Debug.Log(time);
         }
 
         /*Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
@@ -103,6 +56,73 @@ public class EnemyAI : MonoBehaviour
         {*/
         agent.nextPosition = transform.position; //+ 0.1f * worldDeltaPosition;
         //}
+
+        switch (state)
+        {
+            case States.Idle:
+                if (time <= 0)
+                {
+                    state = States.Wander;
+                    wander = WanderDest(transform.position, Random.Range(10f, 20f));
+                    agent.SetDestination(wander);
+                }
+                break;
+            case States.Wander:
+                if (agent.remainingDistance < 0.2f)
+                {
+                    time = Random.Range(1f, 4f);
+                    state = States.Idle;
+                }
+                break;
+            case States.Chase:
+                agent.SetDestination(player.position);
+
+                if (!aggro)
+                {
+                    if (time <= 0)
+                    {
+                        state = States.Idle;
+                    }
+                }
+                else
+                {
+                    time = 4f;
+                }
+                break;
+            case States.Stun:
+                stunParticle.SetActive(true);
+                if (time <= 0)
+                {
+                    stunParticle.SetActive(false);
+
+                    if (aggro)
+                    {
+                        state = States.Chase;
+                        agent.SetDestination(player.position);
+                    }
+                    else
+                    {
+                        time = Random.Range(1f, 4f);
+                        state = States.Idle;
+                        agent.SetDestination(transform.position);
+                    }
+
+                    Debug.Log(state);
+                }
+                break;
+
+                
+        }
+
+        if (HP <= 0)
+        {
+            this.gameObject.SetActive(false);
+        }
+    }
+
+    void FixedUpdate()
+    {
+        EnemyMove();
     }
 
     Vector3 WanderDest(Vector3 center, float range)
@@ -116,27 +136,47 @@ public class EnemyAI : MonoBehaviour
         return hit.position;
     }
 
-    public void PlayerEntered()
+    void EnemyMove()
     {
-        time = 4;
-        aggro = true;
-        state = States.Chase;
+        if (C_C.isGrounded)
+        {
+            enemyVel = Vector3.zero;
+            if (state != States.Stun)
+            {
+                C_C.Move(agent.velocity * 2 * Time.deltaTime);
+            }
+        }
+        else
+        {
+            enemyVel.y -= gravity;
+            C_C.Move(enemyVel * Time.deltaTime);
+        }
     }
 
-    public void PlayerExited()
+    public void PlayerEntered()
     {
-        aggro = false;
+        if (state != States.Stun)
+        {
+            time = 4f;
+            state = States.Chase;
+        }
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Hurtbox")
         {
-            Debug.Log("Hit!");
-
             HP -= other.GetComponentInParent<HurtboxInfo>().damage;
+
             enemyVel = Vector3.Normalize(transform.position-other.GetComponentInParent<Transform>().position)* other.GetComponentInParent<HurtboxInfo>().knockback;
-            enemyVel.y = 4;
+            enemyVel.y = other.GetComponentInParent<HurtboxInfo>().knockback*0.2f;
+            C_C.Move(Vector3.up*0.1f);
+
+            if (other.GetComponentInParent<HurtboxInfo>().canStun)
+            {
+                state = States.Stun;
+                time = 3.5f;
+            }
         }
     }
 }

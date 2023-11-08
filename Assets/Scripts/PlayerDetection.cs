@@ -10,6 +10,7 @@ public class PlayerDetection : MonoBehaviour
         {
             Debug.Log("In");
             gameObject.GetComponentInParent<EnemyAI>().PlayerEntered();
+            gameObject.GetComponentInParent<EnemyAI>().aggro = true;
         }
     }
 
@@ -18,7 +19,7 @@ public class PlayerDetection : MonoBehaviour
         if (other.tag == "Player")
         {
             Debug.Log("Out");
-            gameObject.GetComponentInParent<EnemyAI>().PlayerExited();
+            gameObject.GetComponentInParent<EnemyAI>().aggro = false;
         }
     }
 }
