@@ -5,14 +5,15 @@ using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
-    private NavMeshAgent agent;
     private CharacterController C_C;
+    private NavMeshAgent agent;
 
     public Transform player;
     public GameObject stunParticle;
 
     public List<Transform> locations = new List<Transform>();
     public Vector3 wander = Vector3.zero;
+    private NavMeshPath path;
 
     private int HP = 999;
     public bool aggro = false;
@@ -34,28 +35,32 @@ public class EnemyAI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        agent = this.gameObject.GetComponent<NavMeshAgent>();
         C_C = this.gameObject.GetComponent<CharacterController>();
+        agent = this.gameObject.GetComponent<NavMeshAgent>();
+        path = new NavMeshPath();
 
         agent.updatePosition = false;
         agent.updateRotation = false;
 
+        NavMesh.CalculatePath(transform.position, transform.position, NavMesh.AllAreas, path);
+
         time = Random.Range(1f, 4f);
+    }
+
+    void FixedUpdate()
+    {
+        EnemyMove();
     }
 
     void Update()
     {
+        Debug.DrawLine(transform.position, path.corners[1], Color.green);
+
         if ((!aggro) || (state == States.Stun))
         {
             time -= Time.deltaTime;
             Debug.Log(time);
         }
-
-        /*Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
-        if (worldDeltaPosition.magnitude > agent.radius)
-        {*/
-        agent.nextPosition = transform.position; //+ 0.1f * worldDeltaPosition;
-        //}
 
         switch (state)
         {
@@ -64,18 +69,19 @@ public class EnemyAI : MonoBehaviour
                 {
                     state = States.Wander;
                     wander = WanderDest(transform.position, Random.Range(10f, 20f));
-                    agent.SetDestination(wander);
+                    NavMesh.CalculatePath(transform.position, wander, NavMesh.AllAreas, path);
+                    //agent.SetDestination(wander);
                 }
                 break;
             case States.Wander:
-                if (agent.remainingDistance < 0.2f)
+                if (Vector3.Distance(transform.position, wander) < 0.2f)
                 {
                     time = Random.Range(1f, 4f);
                     state = States.Idle;
                 }
                 break;
             case States.Chase:
-                agent.SetDestination(player.position);
+                NavMesh.CalculatePath(transform.position, player.position, NavMesh.AllAreas, path);
 
                 if (!aggro)
                 {
@@ -98,13 +104,13 @@ public class EnemyAI : MonoBehaviour
                     if (aggro)
                     {
                         state = States.Chase;
-                        agent.SetDestination(player.position);
+                        NavMesh.CalculatePath(transform.position, player.position, NavMesh.AllAreas, path);
                     }
                     else
                     {
                         time = Random.Range(1f, 4f);
                         state = States.Idle;
-                        agent.SetDestination(transform.position);
+                        NavMesh.CalculatePath(transform.position, transform.position, NavMesh.AllAreas, path);
                     }
 
                     Debug.Log(state);
@@ -120,9 +126,15 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    void LateUpdate()
     {
-        EnemyMove();
+        /*Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
+        if (worldDeltaPosition.magnitude > agent.radius)
+        {
+            agent.nextPosition = transform.position + 0.5f * worldDeltaPosition;
+        }*/
+
+        agent.nextPosition = transform.position;
     }
 
     Vector3 WanderDest(Vector3 center, float range)
@@ -133,17 +145,21 @@ public class EnemyAI : MonoBehaviour
         {
             return hit.position;
         }
-        return hit.position;
+        return Vector3.forward;
     }
 
     void EnemyMove()
     {
+        Vector3 desDir = Vector3.Normalize(transform.position - path.corners[1]);
+        Debug.DrawLine(transform.position, transform.position + desDir, Color.cyan);
+        
+
         if (C_C.isGrounded)
         {
             enemyVel = Vector3.zero;
             if (state != States.Stun)
             {
-                C_C.Move(agent.velocity * 2 * Time.deltaTime);
+                C_C.Move(desDir * 10 * Time.deltaTime);
             }
         }
         else

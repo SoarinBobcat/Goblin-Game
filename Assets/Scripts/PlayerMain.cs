@@ -36,7 +36,10 @@ public class PlayerMain : MonoBehaviour
     public Vector3 playerVel = Vector3.zero;
 
     public WeaponHandler weaponHandlerScript;
-    public GameObject foot;
+    public Animator foot;
+
+    public GameObject kickBox;
+    public GameObject scytheBox;
 
     private bool kickAnim = false;
 
@@ -77,7 +80,8 @@ public class PlayerMain : MonoBehaviour
 
         if (Input.GetButton("Kick"))
         {
-            kickAnim = true;
+            foot.SetBool("Kicking", true);
+            kickBox.SetActive(true);
         }
 
         player.Move(playerVel * Time.deltaTime);
