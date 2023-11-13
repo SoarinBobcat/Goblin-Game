@@ -36,7 +36,9 @@ public class PlayerMain : MonoBehaviour
     public Vector3 playerVel = Vector3.zero;
 
     public WeaponHandler weaponHandlerScript;
-    public GameObject foot;
+    public Animator foot;
+    public GameObject kickBox;
+    public GameObject scytheBox;
 
     private bool kickAnim = false;
 
@@ -75,9 +77,20 @@ public class PlayerMain : MonoBehaviour
             AirMove();
         }
 
-        if (Input.GetButton("Kick"))
+        if (Input.GetAxisRaw("Kick") > 0)
         {
-            kickAnim = true;
+            Debug.Log("Fart");
+        }
+
+            if (((Input.GetButton("Kick")) || (Input.GetAxisRaw("Kick")) > 0) && (!foot.GetBool("Kicking")))
+        {
+            foot.SetBool("Kicking", true);
+            kickBox.SetActive(true);
+            Accelerate(transform.forward, AirSettings.MaxSpd, 1000);
+        }
+        else if (foot.GetBool("Kicking"))
+        {
+            kickBox.SetActive(false);
         }
 
         player.Move(playerVel * Time.deltaTime);

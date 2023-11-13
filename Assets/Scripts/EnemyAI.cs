@@ -37,8 +37,6 @@ public class EnemyAI : MonoBehaviour
         agent = this.gameObject.GetComponent<NavMeshAgent>();
         C_C = this.gameObject.GetComponent<CharacterController>();
 
-        agent.updatePosition = false;
-        agent.updateRotation = false;
 
         time = Random.Range(1f, 4f);
     }
@@ -48,7 +46,7 @@ public class EnemyAI : MonoBehaviour
         if ((!aggro) || (state == States.Stun))
         {
             time -= Time.deltaTime;
-            Debug.Log(time);
+            //Debug.Log(time);
         }
 
         /*Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
@@ -143,11 +141,16 @@ public class EnemyAI : MonoBehaviour
             enemyVel = Vector3.zero;
             if (state != States.Stun)
             {
-                C_C.Move(agent.velocity * 2 * Time.deltaTime);
+                agent.updatePosition = true;
+                agent.updateRotation = true;
             }
         }
         else
         {
+
+            agent.updatePosition = false;
+            agent.updateRotation = false;
+
             enemyVel.y -= gravity;
             C_C.Move(enemyVel * Time.deltaTime);
         }
