@@ -25,6 +25,7 @@ public class PlayerMain : MonoBehaviour
     [SerializeField] private float gravity = 0.5f;
     [SerializeField] private float jumpSpd = 8f;
     [SerializeField] private float hopSpd = 4f;
+    private bool grounded = false;
 
     [SerializeField] private MovementSettings GroundSettings = new MovementSettings(10,14,10);
     [SerializeField] private MovementSettings AirSettings = new MovementSettings(10,2,2);
@@ -37,6 +38,7 @@ public class PlayerMain : MonoBehaviour
 
     public WeaponHandler weaponHandlerScript;
     public Animator foot;
+    public Animator scythe;
     public GameObject kickBox;
     public GameObject scytheBox;
 
@@ -58,11 +60,27 @@ public class PlayerMain : MonoBehaviour
         trans = transform;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
         moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
+        if (((Input.GetButtonDown("Kick")) || (Input.GetAxisRaw("Kick")) > 0) && (!foot.GetBool("Kicking")))
+        {
+            foot.SetBool("Kicking", true);
+            kickBox.SetActive(true);
+            Accelerate(transform.forward, AirSettings.MaxSpd, 1000);
+        }
+
+        if (((Input.GetMouseButtonDown(0)) || (Input.GetAxisRaw("Scythe")) < 0) && (!scythe.GetBool("Slashing")))
+        {
+            scythe.SetBool("Slashing", true);
+            scytheBox.SetActive(true);
+        }
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
         weaponHandlerScript.currSpd = 0;
         if (player.isGrounded)
         {
@@ -75,22 +93,7 @@ public class PlayerMain : MonoBehaviour
         else
         {
             AirMove();
-        }
-
-        if (Input.GetAxisRaw("Kick") > 0)
-        {
-            Debug.Log("Fart");
-        }
-
-            if (((Input.GetButton("Kick")) || (Input.GetAxisRaw("Kick")) > 0) && (!foot.GetBool("Kicking")))
-        {
-            foot.SetBool("Kicking", true);
-            kickBox.SetActive(true);
-            Accelerate(transform.forward, AirSettings.MaxSpd, 1000);
-        }
-        else if (foot.GetBool("Kicking"))
-        {
-            kickBox.SetActive(false);
+            playerVel.y -= gravity;
         }
 
         player.Move(playerVel * Time.deltaTime);
@@ -132,8 +135,6 @@ public class PlayerMain : MonoBehaviour
 
         Accelerate(wishDir, wishSpd, accel);
         AirControl(wishDir, wishSpd2);
-
-        playerVel.y -= gravity;
     }
 
     private void GroundMove()
