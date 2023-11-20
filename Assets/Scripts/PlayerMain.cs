@@ -67,14 +67,12 @@ public class PlayerMain : MonoBehaviour
         if (((Input.GetButtonDown("Kick")) || (Input.GetAxisRaw("Kick")) > 0) && (!foot.GetBool("Kicking")))
         {
             foot.SetBool("Kicking", true);
-            kickBox.SetActive(true);
             Accelerate(transform.forward, AirSettings.MaxSpd, 1000);
         }
 
         if (((Input.GetMouseButtonDown(0)) || (Input.GetAxisRaw("Scythe")) < 0) && (!scythe.GetBool("Slashing")))
         {
             scythe.SetBool("Slashing", true);
-            scytheBox.SetActive(true);
         }
     }
 
