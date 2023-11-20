@@ -7,6 +7,7 @@ TagManager:
   - Weapon
   - Hurtbox
   - Pickup
+  - Wall
   layers:
   - Default
   - TransparentFX

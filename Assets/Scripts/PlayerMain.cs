@@ -51,7 +51,7 @@ public class PlayerMain : MonoBehaviour
         Kick
     }
 
-    
+    private int HP = 2;
 
     // Start is called before the first frame update
     void Start()

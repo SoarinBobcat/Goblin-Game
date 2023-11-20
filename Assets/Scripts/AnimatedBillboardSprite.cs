@@ -57,9 +57,6 @@ public class AnimatedBillboardSprite : MonoBehaviour {
             }
         }
 
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay( transform.parent.position, transform.parent.forward * 2);
-
     }
 
     private SceneView GetActiveSceneView()

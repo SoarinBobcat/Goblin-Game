@@ -13,13 +13,16 @@ public class EnemyAI : MonoBehaviour
 
     public List<Transform> locations = new List<Transform>();
     public Vector3 wander = Vector3.zero;
+    private Vector3 lastPos = Vector3.zero;
 
-    private int HP = 999;
+    private int HP = 8;
     public bool aggro = false;
     private float time = 0;
 
     private float gravity = 0.5f;
     public Vector3 enemyVel = Vector3.zero;
+
+    public GameObject boner;
 
     enum States
     {
@@ -37,6 +40,7 @@ public class EnemyAI : MonoBehaviour
         agent = this.gameObject.GetComponent<NavMeshAgent>();
         C_C = this.gameObject.GetComponent<CharacterController>();
 
+        lastPos = transform.position;
 
         time = Random.Range(1f, 4f);
     }
@@ -114,6 +118,10 @@ public class EnemyAI : MonoBehaviour
 
         if (HP <= 0)
         {
+            for (var i = 0; i < 6; i++)
+            {
+                Instantiate(boner, transform.position, Quaternion.identity);
+            }
             this.gameObject.SetActive(false);
         }
     }
@@ -152,7 +160,14 @@ public class EnemyAI : MonoBehaviour
             agent.updateRotation = false;
 
             enemyVel.y -= gravity;
+
+            lastPos = transform.position;
             C_C.Move(enemyVel * Time.deltaTime);
+
+            if ((Vector3.Distance(transform.position, lastPos) < 0.2) && (state == States.Stun))
+            {
+                HP -= 8;
+            }
         }
     }
 
@@ -181,5 +196,29 @@ public class EnemyAI : MonoBehaviour
                 time = 3.5f;
             }
         }
+
+        if (other.tag == "Wall")
+        {
+            if (state == States.Stun)
+            {
+                enemyVel.x = -enemyVel.x / 2;
+                enemyVel.z = -enemyVel.z / 2;
+
+                HP -= 8;
+            }
+        }
     }
+
+    /*void OnCollisionEnter(Collider other)
+    {
+        if (other.tag == "Wall")
+        {
+            if (state == States.Stun) {
+                enemyVel.x = -enemyVel.x / 2;
+                enemyVel.z = -enemyVel.z / 2;
+
+                HP -= 8;
+            }
+        }
+    }*/
 }
