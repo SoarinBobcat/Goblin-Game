@@ -4,14 +4,29 @@ using UnityEngine;
 
 public class DoorID : MonoBehaviour
 {
-    public GameObject UnlockID;
+    public List<GameObject> UnlockID = new List<GameObject>();
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!UnlockID.activeSelf)
+        if (KeyCheck())
         {
             transform.position += new Vector3(0, -20 * Time.deltaTime, 0);
         }
+    }
+
+    bool KeyCheck()
+    {
+        bool unlocked = true;
+        foreach (GameObject key in UnlockID)
+        {
+            if (key.activeSelf)
+            {
+                unlocked = false;
+                break;
+            }
+        }
+
+        return unlocked;
     }
 }

@@ -8,6 +8,7 @@ TagManager:
   - Hurtbox
   - Pickup
   - Wall
+  - EnemyHitBox
   layers:
   - Default
   - TransparentFX

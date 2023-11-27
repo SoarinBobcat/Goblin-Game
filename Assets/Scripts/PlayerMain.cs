@@ -237,4 +237,12 @@ public class PlayerMain : MonoBehaviour
         playerVel.x *= newSpd;
         playerVel.z *= newSpd;
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "EnemyHitBox")
+        {
+            HP = 0;
+        }
+    }
 }
