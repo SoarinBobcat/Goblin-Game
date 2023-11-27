@@ -10,6 +10,7 @@ public class EnemyAI : MonoBehaviour
 
     public Transform player;
     public GameObject stunParticle;
+    public GameObject hitBox;
 
     public List<Transform> locations = new List<Transform>();
     public Vector3 wander = Vector3.zero;
@@ -29,6 +30,8 @@ public class EnemyAI : MonoBehaviour
         Idle,
         Wander,
         Chase,
+        AttackPrep,
+        Attack,
         Stun
     }
 
@@ -50,24 +53,33 @@ public class EnemyAI : MonoBehaviour
         if ((!aggro) || (state == States.Stun))
         {
             time -= Time.deltaTime;
-            //Debug.Log(time);
         }
 
-        /*Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
-        if (worldDeltaPosition.magnitude > agent.radius)
-        {*/
-        agent.nextPosition = transform.position; //+ 0.1f * worldDeltaPosition;
-        //}
+        if ((aggro) && ((state == States.AttackPrep) || (state == States.Idle)))
+        {
+            time -= Time.deltaTime;
+        }
+
+        agent.nextPosition = transform.position;
 
         switch (state)
         {
             case States.Idle:
                 if (time <= 0)
                 {
-                    state = States.Wander;
-                    wander = WanderDest(transform.position, Random.Range(10f, 20f));
-                    agent.SetDestination(wander);
+                    if (aggro)
+                    {
+                        state = States.Chase;
+                        agent.SetDestination(player.position);
+                    }
+                    else
+                    {
+                        state = States.Wander;
+                        wander = WanderDest(transform.position, Random.Range(10f, 20f));
+                        agent.SetDestination(wander);
+                    }
                 }
+
                 break;
             case States.Wander:
                 if (agent.remainingDistance < 0.2f)
@@ -90,9 +102,41 @@ public class EnemyAI : MonoBehaviour
                 {
                     time = 4f;
                 }
+
+                if (Vector3.Distance(transform.position, player.position) < 8f)
+                {
+                    time = 0.5f;
+                    state = States.AttackPrep;
+                }
+
+                break;
+            case States.AttackPrep:
+                agent.SetDestination(transform.position);
+                if (time <= 0)
+                {
+                    enemyVel = Vector3.Normalize(player.position - transform.position) * 20;
+                    enemyVel.y = 8f;
+                    C_C.Move(Vector3.up * 0.1f);
+                    Vector3 pPos = new Vector3(player.position.x, 0, player.position.z);
+                    transform.LookAt(player.position);
+                    state = States.Attack;
+                }
+                break;
+            case States.Attack:
+                hitBox.SetActive(true);
+
+                if (C_C.isGrounded)
+                {
+                    aggro = true;
+                    time = 1f;
+                    state = States.Idle;
+                    agent.SetDestination(transform.position);
+                    hitBox.SetActive(false);
+                }
                 break;
             case States.Stun:
                 stunParticle.SetActive(true);
+                hitBox.SetActive(false);
                 if (time <= 0)
                 {
                     stunParticle.SetActive(false);
@@ -163,11 +207,6 @@ public class EnemyAI : MonoBehaviour
 
             lastPos = transform.position;
             C_C.Move(enemyVel * Time.deltaTime);
-
-            if ((Vector3.Distance(transform.position, lastPos) < 0.2) && (state == States.Stun))
-            {
-                HP -= 8;
-            }
         }
     }
 

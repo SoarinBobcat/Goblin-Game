@@ -16,7 +16,7 @@ public class CameraMovement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
         float camX = (Input.GetAxis("Mouse X")+(Input.GetAxis("Look Horizontal")/8)) * cameraSensitivity;
         float camY = (Input.GetAxis("Mouse Y")+ (Input.GetAxis("Look Vertical")/10)) * cameraSensitivity;

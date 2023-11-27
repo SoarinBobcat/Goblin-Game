@@ -62,17 +62,20 @@ public class PlayerMain : MonoBehaviour
 
     void Update()
     {
-        moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
-
-        if (((Input.GetButtonDown("Kick")) || (Input.GetAxisRaw("Kick")) > 0) && (!foot.GetBool("Kicking")))
+        if (HP > 0)
         {
-            foot.SetBool("Kicking", true);
-            Accelerate(transform.forward, AirSettings.MaxSpd, 1000);
-        }
+            moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
-        if (((Input.GetMouseButtonDown(0)) || (Input.GetAxisRaw("Scythe")) < 0) && (!scythe.GetBool("Slashing")))
-        {
-            scythe.SetBool("Slashing", true);
+            if (((Input.GetButtonDown("Kick")) || (Input.GetAxisRaw("Kick")) > 0) && (!foot.GetBool("Kicking")))
+            {
+                foot.SetBool("Kicking", true);
+                Accelerate(transform.forward, AirSettings.MaxSpd, 1000);
+            }
+
+            if (((Input.GetMouseButtonDown(0)) || (Input.GetAxisRaw("Scythe")) < 0) && (!scythe.GetBool("Slashing")))
+            {
+                scythe.SetBool("Slashing", true);
+            }
         }
     }
 
@@ -242,6 +245,7 @@ public class PlayerMain : MonoBehaviour
     {
         if (other.tag == "EnemyHitBox")
         {
+            playerVel = Vector3.zero;
             HP = 0;
         }
     }
