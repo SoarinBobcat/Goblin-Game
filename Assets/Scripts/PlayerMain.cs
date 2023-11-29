@@ -41,6 +41,7 @@ public class PlayerMain : MonoBehaviour
     public Animator scythe;
     public GameObject kickBox;
     public GameObject scytheBox;
+    public GameObject fade;
 
     private bool kickAnim = false;
 
@@ -62,6 +63,7 @@ public class PlayerMain : MonoBehaviour
 
     void Update()
     {
+        //Check if player is supposed to be dead
         if (HP > 0)
         {
             moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
@@ -76,6 +78,13 @@ public class PlayerMain : MonoBehaviour
             {
                 scythe.SetBool("Slashing", true);
             }
+        }
+        else
+        {
+            //if they dead show gameover screen
+            playerVel = Vector3.zero;
+            fade.SetActive(true);
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 
@@ -241,11 +250,11 @@ public class PlayerMain : MonoBehaviour
         playerVel.z *= newSpd;
     }
 
+    //Kills player if hit by enemy
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "EnemyHitBox")
         {
-            playerVel = Vector3.zero;
             HP = 0;
         }
     }

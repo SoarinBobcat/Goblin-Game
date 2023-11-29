@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class KeyID : MonoBehaviour
 {
+    //Disappear upon touching player
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")

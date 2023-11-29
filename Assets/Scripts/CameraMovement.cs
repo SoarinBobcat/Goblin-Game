@@ -18,13 +18,17 @@ public class CameraMovement : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        float camX = (Input.GetAxis("Mouse X")+(Input.GetAxis("Look Horizontal")/8)) * cameraSensitivity;
-        float camY = (Input.GetAxis("Mouse Y")+ (Input.GetAxis("Look Vertical")/10)) * cameraSensitivity;
+        if (Cursor.lockState == CursorLockMode.Locked)
+        {
+            float camX = (Input.GetAxis("Mouse X") + (Input.GetAxis("Look Horizontal") / 8)) * cameraSensitivity;
+            float camY = (Input.GetAxis("Mouse Y") + (Input.GetAxis("Look Vertical") / 10)) * cameraSensitivity;
 
-        cameraVerticalRotation -= camY;
-        cameraVerticalRotation = Mathf.Clamp(cameraVerticalRotation, -80f, 80f);
-        transform.localEulerAngles = Vector3.right * cameraVerticalRotation;
 
-        player.Rotate(Vector3.up * camX);
+            cameraVerticalRotation -= camY;
+            cameraVerticalRotation = Mathf.Clamp(cameraVerticalRotation, -80f, 80f);
+            transform.localEulerAngles = Vector3.right * cameraVerticalRotation;
+
+            player.Rotate(Vector3.up * camX);
+        }
     }
 }

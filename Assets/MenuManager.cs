@@ -52,6 +52,7 @@ public class MenuManager : MonoBehaviour
             menuNumber = 0;
         }
 
+        //Selects current menu option
         if (Input.GetButtonDown("Jump") || Input.GetButtonDown("Submit"))
         {
             if (!subMenu)
