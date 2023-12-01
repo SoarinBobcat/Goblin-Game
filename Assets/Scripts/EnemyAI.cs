@@ -24,6 +24,7 @@ public class EnemyAI : MonoBehaviour
     public Vector3 enemyVel = Vector3.zero;
 
     public GameObject boner;
+    public Animator anim;
 
     enum States
     {
@@ -65,6 +66,7 @@ public class EnemyAI : MonoBehaviour
         switch (state)
         {
             case States.Idle:
+                anim.SetInteger("State", 0);
                 if (time <= 0)
                 {
                     if (aggro)
@@ -82,6 +84,7 @@ public class EnemyAI : MonoBehaviour
 
                 break;
             case States.Wander:
+                anim.SetInteger("State", 1);
                 if (agent.remainingDistance < 0.2f)
                 {
                     time = Random.Range(1f, 4f);
@@ -89,6 +92,7 @@ public class EnemyAI : MonoBehaviour
                 }
                 break;
             case States.Chase:
+                anim.SetInteger("State", 2);
                 agent.SetDestination(player.position);
 
                 if (!aggro)
@@ -111,6 +115,7 @@ public class EnemyAI : MonoBehaviour
 
                 break;
             case States.AttackPrep:
+                anim.SetInteger("State", 3);
                 agent.SetDestination(transform.position);
                 if (time <= 0)
                 {
@@ -123,6 +128,7 @@ public class EnemyAI : MonoBehaviour
                 }
                 break;
             case States.Attack:
+                anim.SetInteger("State", 4);
                 hitBox.SetActive(true);
 
                 if (C_C.isGrounded)
@@ -135,6 +141,7 @@ public class EnemyAI : MonoBehaviour
                 }
                 break;
             case States.Stun:
+                anim.SetInteger("State", 5);
                 stunParticle.SetActive(true);
                 hitBox.SetActive(false);
                 if (time <= 0)

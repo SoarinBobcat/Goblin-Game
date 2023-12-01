@@ -60,4 +60,9 @@ public class UIManager : MonoBehaviour
     {
         SceneManager.LoadScene("DebugRoom");
     }
+
+    public void Menu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
 }

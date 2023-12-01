@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PlayerMain : MonoBehaviour
 {
@@ -33,6 +35,7 @@ public class PlayerMain : MonoBehaviour
 
     private CharacterController player;
     private Transform trans;
+    public Transform camTrans;
     private Vector3 moveDir = Vector3.zero;
     public Vector3 playerVel = Vector3.zero;
 
@@ -42,6 +45,10 @@ public class PlayerMain : MonoBehaviour
     public GameObject kickBox;
     public GameObject scytheBox;
     public GameObject fade;
+    public GameObject win;
+    public Image crosshair;
+    public GameObject retryFade;
+    public GameObject retryWin;
 
     private bool kickAnim = false;
 
@@ -64,7 +71,7 @@ public class PlayerMain : MonoBehaviour
     void Update()
     {
         //Check if player is supposed to be dead
-        if (HP > 0)
+        if ((HP > 0) && (!win.activeSelf))
         {
             moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 
@@ -82,9 +89,26 @@ public class PlayerMain : MonoBehaviour
         else
         {
             //if they dead show gameover screen
+            moveDir = Vector3.zero;
             playerVel = Vector3.zero;
-            fade.SetActive(true);
             Cursor.lockState = CursorLockMode.None;
+        }
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, camTrans.forward, out hit, Mathf.Infinity, (1 << 3)))
+        {
+            if (hit.collider.gameObject.tag == "Pickup")
+            {
+                crosshair.color = Color.yellow;
+            }
+            else if (hit.collider.gameObject.tag == "Enemy")
+            {
+                crosshair.color = Color.red;
+            }
+        }
+        else
+        {
+            crosshair.color = Color.white;
         }
     }
 
@@ -253,9 +277,17 @@ public class PlayerMain : MonoBehaviour
     //Kills player if hit by enemy
     void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "EnemyHitBox")
+        if ((other.tag == "EnemyHitBox") && (!win.activeSelf))
         {
             HP = 0;
+            fade.SetActive(true);
+            EventSystem.current.SetSelectedGameObject(retryFade);
+        }
+
+        if ((other.tag == "Win") && (!fade.activeSelf))
+        {
+            win.SetActive(true);
+            EventSystem.current.SetSelectedGameObject(retryWin);
         }
     }
 }

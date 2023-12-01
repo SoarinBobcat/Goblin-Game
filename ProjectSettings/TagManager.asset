@@ -9,11 +9,13 @@ TagManager:
   - Pickup
   - Wall
   - EnemyHitBox
+  - Enemy
+  - Win
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Entity
   - Water
   - UI
   - Weapon
