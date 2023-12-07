@@ -13,7 +13,7 @@ public class AnimatedBillboardSprite : MonoBehaviour {
     float maxMirrorAngle = 0;
 
 	void Start () {
-        m_Anim = this.GetComponent<Animator>();
+        //m_Anim = this.GetComponent<Animator>();
         m_SpriteRenderer = this.GetComponent<SpriteRenderer>();
         if (directions <= 0)
         {
@@ -44,7 +44,7 @@ public class AnimatedBillboardSprite : MonoBehaviour {
     /// <summary>
     /// Rotate billboards to face editor camera while game not running.
     /// </summary>
-    public void OnDrawGizmos()
+    /*public void OnDrawGizmos()
     {
         if (!Application.isPlaying)
         {
@@ -57,14 +57,14 @@ public class AnimatedBillboardSprite : MonoBehaviour {
             }
         }
 
-    }
+    }*/
 
-    private SceneView GetActiveSceneView()
+    /*private SceneView GetActiveSceneView()
     {
         // Return the focused window if it is a SceneView
         if (EditorWindow.focusedWindow != null && EditorWindow.focusedWindow.GetType() == typeof(SceneView))
             return (SceneView)EditorWindow.focusedWindow;
 
         return null;
-    }
+    }*/
 }

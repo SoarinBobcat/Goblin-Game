@@ -20,8 +20,8 @@ public class CameraMovement : MonoBehaviour
     {
         if (Cursor.lockState == CursorLockMode.Locked)
         {
-            float camX = (Input.GetAxis("Mouse X") + (Input.GetAxis("Look Horizontal") / 8)) * cameraSensitivity;
-            float camY = (Input.GetAxis("Mouse Y") + (Input.GetAxis("Look Vertical") / 10)) * cameraSensitivity;
+            float camX = (Input.GetAxis("Mouse X") + (Input.GetAxis("Look Horizontal"))) * cameraSensitivity * Time.deltaTime;
+            float camY = (Input.GetAxis("Mouse Y") + (Input.GetAxis("Look Vertical"))) * cameraSensitivity * Time.deltaTime;
 
 
             cameraVerticalRotation -= camY;

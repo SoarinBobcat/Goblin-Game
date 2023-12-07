@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
@@ -25,6 +26,8 @@ public class EnemyAI : MonoBehaviour
 
     public GameObject boner;
     public Animator anim;
+    public GameObject treasure;
+    private AudioSource sound;
 
     enum States
     {
@@ -43,6 +46,8 @@ public class EnemyAI : MonoBehaviour
     {
         agent = this.gameObject.GetComponent<NavMeshAgent>();
         C_C = this.gameObject.GetComponent<CharacterController>();
+
+        sound = this.gameObject.GetComponent<AudioSource>();
 
         lastPos = transform.position;
 
@@ -79,7 +84,15 @@ public class EnemyAI : MonoBehaviour
                         state = States.Wander;
                         wander = WanderDest(transform.position, Random.Range(10f, 20f));
                         agent.SetDestination(wander);
+                        sound.clip = Resources.Load<AudioClip>("angybones");
+                        sound.Play();
                     }
+                }
+
+                if (!treasure.activeSelf)
+                {
+                    state = States.Chase;
+                    agent.SetDestination(player.position);
                 }
 
                 break;
@@ -89,10 +102,19 @@ public class EnemyAI : MonoBehaviour
                 {
                     time = Random.Range(1f, 4f);
                     state = States.Idle;
+                    sound.clip = Resources.Load<AudioClip>("idle");
+                    sound.Play();
+                }
+
+                if (!treasure.activeSelf)
+                {
+                    state = States.Chase;
+                    agent.SetDestination(player.position);
                 }
                 break;
             case States.Chase:
                 anim.SetInteger("State", 2);
+
                 agent.SetDestination(player.position);
 
                 if (!aggro)
@@ -100,6 +122,8 @@ public class EnemyAI : MonoBehaviour
                     if (time <= 0)
                     {
                         state = States.Idle;
+                        sound.clip = Resources.Load<AudioClip>("idle");
+                        sound.Play();
                     }
                 }
                 else
@@ -111,6 +135,8 @@ public class EnemyAI : MonoBehaviour
                 {
                     time = 0.5f;
                     state = States.AttackPrep;
+                    sound.clip = Resources.Load<AudioClip>("scream");
+                    sound.Play();
                 }
 
                 break;
@@ -240,6 +266,8 @@ public class EnemyAI : MonoBehaviour
             {
                 state = States.Stun;
                 time = 3.5f;
+                sound.clip = Resources.Load<AudioClip>("bonk");
+                sound.Play();
             }
         }
 
